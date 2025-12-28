@@ -4,6 +4,7 @@ import numpy as np
 import joblib
 import pandas as pd
 import io
+import time
 from typing import List
 from train_model import train_on_data
 
