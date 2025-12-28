@@ -9,10 +9,21 @@ from train_model import train_on_data
 
 app = FastAPI(title="Diabetes API", version="1.0")
 
+# --- ONLINE METRICS STORAGE ---
+# Variabel global untuk menyimpan statistik di memori
+metrics_data = {
+    "total_predictions": 0,
+    "high_risk_detected": 0,
+    "last_training_time": "Never",
+    "last_model_accuracy": 0.0,
+    "model_status": "Not Loaded"
+}
+
 # Load model
 try:
     model = joblib.load("model.pkl")
     features = joblib.load("features.pkl")
+    metrics_data["model_status"] = "Ready"
     print(f"Model loaded with {len(features)} features")
 except:
     print("Warning: Using fallback model")
@@ -73,6 +84,22 @@ def predict(patient: Patient):
         "risk": "high" if probability > 0.7 else "medium" if probability > 0.3 else "low"
     }
 
+@app.get("/metrics")
+def get_metrics():
+    """Endpoint untuk melihat performa model secara online"""
+    return {
+        "model_performance": {
+            "last_accuracy": f"{metrics_data['last_model_accuracy']:.2%}",
+            "last_trained": metrics_data["last_training_time"],
+            "status": metrics_data["model_status"]
+        },
+        "usage_statistics": {
+            "total_requests": metrics_data["total_predictions"],
+            "high_risk_cases": metrics_data["high_risk_detected"],
+            "normal_cases": metrics_data["total_predictions"] - metrics_data["high_risk_detected"]
+        }
+    }
+    
 @app.post("/train")
 async def train_from_csv(file: UploadFile = File(...)):
     """Endpoint untuk upload dataset baru dan train ulang secara otomatis"""
