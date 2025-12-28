@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.10-slim
 
 WORKDIR /app
 
@@ -9,8 +9,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy code
 COPY . .
 
-# Train model
-RUN python train_model.py
+# Train model 
+# RUN python train_model.py 
 
 # Expose port
 EXPOSE 8000

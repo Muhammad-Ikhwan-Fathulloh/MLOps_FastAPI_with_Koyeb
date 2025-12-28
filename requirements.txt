@@ -2,9 +2,12 @@
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
 pydantic==2.5.0
+# Diperlukan untuk menangani upload file (UploadFile)
+python-multipart==0.0.6
 
-# Data processing
+# Data processing & CSV Handling
 numpy==1.24.3
+pandas==2.1.3
 scikit-learn==1.3.2
 
 # Model persistence
