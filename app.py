@@ -78,6 +78,11 @@ def predict(patient: Patient):
         probability = min(max(risk_score, 0), 1)
         prediction = 1 if probability > 0.5 else 0
     
+    # Update Online Metrics
+    metrics_data["total_predictions"] += 1
+    if prediction == 1:
+        metrics_data["high_risk_detected"] += 1
+        
     return {
         "prediction": prediction,
         "probability": probability,
@@ -122,6 +127,10 @@ async def train_from_csv(file: UploadFile = File(...)):
         global model, features
         model = joblib.load("model.pkl")
         features = updated_features
+
+        metrics_data["last_model_accuracy"] = accuracy
+        metrics_data["last_training_time"] = time.strftime("%Y-%m-%d %H:%M:%S")
+        metrics_data["model_status"] = "Updated"
         
         return {
             "status": "Success",
