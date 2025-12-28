@@ -1,10 +1,30 @@
-"""
-Train model tanpa download dari kaggle
-"""
+import pandas as pd
 import numpy as np
 import joblib
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
+
+def train_on_data(df: pd.DataFrame):
+    """Fungsi untuk melatih model berdasarkan dataframe yang diunggah"""
+    # Pastikan nama kolom sesuai atau sesuaikan targetnya
+    # Asumsi kolom terakhir adalah target (Outcome/Diabetes)
+    X = df.iloc[:, :-1]
+    y = df.iloc[:, -1]
+    
+    feature_names = list(X.columns)
+    
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
+    
+    model = RandomForestClassifier(n_estimators=100, max_depth=10, random_state=42)
+    model.fit(X_train, y_train)
+    
+    # Save artifacts
+    joblib.dump(model, "model.pkl")
+    joblib.dump(feature_names, "features.pkl")
+    
+    return model.score(X_test, y_test), feature_names
 
 def create_diabetes_data():
     """Create synthetic diabetes data based on Pima Indians statistics"""
